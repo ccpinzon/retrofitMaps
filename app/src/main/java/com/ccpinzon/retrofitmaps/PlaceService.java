@@ -11,6 +11,6 @@ import retrofit2.http.GET;
  */
 
 public interface PlaceService {
-    @GET("testWebService")
+    @GET("estaciones.php")
     Call<List<Place>> getPlacesList();
 }

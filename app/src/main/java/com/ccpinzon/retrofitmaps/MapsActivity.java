@@ -11,6 +11,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private List<Place> placesLista;
+    //private List<Place> placesLista;
+    private ClusterManager<Place> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,21 +40,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         traerDatos();
-        //llenar marcadores
 
-//        for (Place place:placesLista) {
-//            LatLng pos = new LatLng(place.getLatitud_estacion(),place.getLongitud_estacion());
-//            mMap.addMarker(new MarkerOptions().position(pos)
-//                    .title(place.getNombre_estacion())
-//                    .snippet(String.valueOf(place.getId_estacion())));
-//        }
 
 
     }
 
     private void traerDatos(){
 
-        Retrofit retrofit =  new Retrofit.Builder().baseUrl("https://knowlinemieds.com/")
+        Retrofit retrofit =  new Retrofit.Builder().baseUrl("http://webserver.mieds.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         PlaceService service = retrofit.create(PlaceService.class);
@@ -63,16 +58,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResponse(Call<List<Place>> call, Response<List<Place>> response) {
                 try {
+                    mClusterManager = new ClusterManager<Place>(getApplication(),mMap);
+                    mMap.setOnCameraIdleListener(mClusterManager);
+                    mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Place>() {
+                        @Override
+                        public boolean onClusterItemClick(Place place) {
+                            Toast.makeText(getApplication(),"prueba" + place.getNombre_estacion(),Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                    });
 
+                    List<Place> dataPlaces = response.body();
+                    mClusterManager.addItems(dataPlaces);
 
-                   List<Place> dataPlaces = response.body();
                     //Llenar el mapa de marcadores
-                    for (Place place : dataPlaces) {
-                        LatLng pos = new LatLng(place.getLatitud_estacion(), place.getLongitud_estacion());
-                        mMap.addMarker(new MarkerOptions().position(pos)
-                                .title(place.getNombre_estacion())
-                                .snippet(String.valueOf(place.getId_estacion())));
-                    }
+//                    for (Place place : dataPlaces) {
+//                        LatLng pos = new LatLng(place.getLatitud_estacion(), place.getLongitud_estacion());
+//                        mMap.addMarker(new MarkerOptions().position(pos)
+//                                .title(place.getNombre_estacion())
+//                                .snippet(String.valueOf(place.getId_estacion())));
+//                    }
 
                     //Toast.makeText(getApplicationContext(),data,Toast.LENGTH_SHORT).show();
 

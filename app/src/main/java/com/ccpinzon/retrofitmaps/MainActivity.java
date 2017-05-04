@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void traerDatos() {
-        Retrofit retrofit =  new Retrofit.Builder().baseUrl("https://knowlinemieds.com/")
+        Retrofit retrofit =  new Retrofit.Builder().baseUrl("http://webserver.mieds.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         PlaceService service = retrofit.create(PlaceService.class);
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<Place>>() {
             @Override
             public void onResponse(Call<List<Place>> call, Response<List<Place>> response) {
+
 
                 try {
 
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-
+                    Toast.makeText(getApplication(),"SIRVE",Toast.LENGTH_SHORT).show();
                     _txtTest.setText(data);
 
                 }catch (Exception e){
