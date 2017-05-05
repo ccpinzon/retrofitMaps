@@ -3,10 +3,6 @@ package com.ccpinzon.retrofitmaps;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
-/**
- * Created by cris_ on 16/03/2017.
- */
-
 public class Place implements ClusterItem {
 
     private int id_estacion;
